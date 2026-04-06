@@ -17,4 +17,10 @@ class PesananDetail extends Model
     {
         return $this->belongsTo(Produk::class);
     }
+
+    // 🔥 TAMBAHAN WAJIB
+    public function pesanan()
+    {
+        return $this->belongsTo(Pesanan::class);
+    }
 }

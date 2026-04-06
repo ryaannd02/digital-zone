@@ -33,5 +33,11 @@ class DatabaseSeeder extends Seeder
             KategoriSeeder::class,
             ProdukSeeder::class,
         ]);
+
+
+        $this->call([
+            AdminSeeder::class,
+        ]);
+    
     }
 }

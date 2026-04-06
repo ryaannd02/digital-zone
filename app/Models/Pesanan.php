@@ -15,7 +15,20 @@ class Pesanan extends Model
         'total_bayar',
         'payment_status',
         'order_status',
+        'expired_at',
+        'payment_method',
+        'payment_detail',
     ];
+
+        public static function generateKode()
+    {
+        do {
+            $random = mt_rand(1000, 99999999); // 4 - 8 digit
+            $kode = 'DGZ-' . $random;
+        } while (self::where('kode', $kode)->exists());
+
+        return $kode;
+    }
 
     public function user()
     {
@@ -31,4 +44,16 @@ class Pesanan extends Model
     {
         return $this->hasMany(PesananDetail::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($pesanan) {
+            if (!$pesanan->kode) {
+                $pesanan->kode = self::generateKode();
+            }
+        });
+    }
+
 }

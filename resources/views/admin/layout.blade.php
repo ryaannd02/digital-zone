@@ -4,54 +4,75 @@
     <meta charset="UTF-8">
     <title>Admin Panel - DigitalZone</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
+
+    <!-- Icon -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-100">
 
 <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col">
-        <div class="p-6 text-2xl font-bold border-b border-gray-700">
-            Admin Panel
+    <aside class="w-64 bg-slate-900 text-slate-200 flex flex-col shadow-xl">
+
+        <!-- Header -->
+        <div class="p-6 text-xl font-semibold border-b border-slate-800 flex items-center gap-2 tracking-wide">
+            <i data-lucide="shield"></i>
+            <span>ADMIN PANEL</span>
         </div>
 
-        <nav class="flex-1 p-4 space-y-2">
+        <!-- Menu -->
+        <nav class="flex-1 p-4 space-y-1 text-sm">
 
             <a href="{{ route('admin.dashboard') }}"
-               class="block px-4 py-2 rounded hover:bg-gray-700">
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                 Dashboard
             </a>
 
             <a href="{{ route('admin.produk.index') }}"
-               class="block px-4 py-2 rounded hover:bg-gray-700">
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="box" class="w-4 h-4"></i>
                 Produk
             </a>
 
             <a href="{{ route('admin.pesanan.index') }}"
-               class="block px-4 py-2 rounded hover:bg-gray-700">
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                 Pesanan
             </a>
 
             <a href="{{ route('admin.users.index') }}"
-               class="block px-4 py-2 rounded hover:bg-gray-700">
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="users" class="w-4 h-4"></i>
                 Users
             </a>
 
             <a href="{{ route('admin.petugas.index') }}"
-               class="block px-4 py-2 rounded hover:bg-gray-700">
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="user-cog" class="w-4 h-4"></i>
                 Petugas
+            </a>
+
+            <a href="{{ route('admin.laporan.index') }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                Laporan
             </a>
 
         </nav>
 
-        <div class="p-4 border-t border-gray-700">
+        <!-- Logout -->
+        <div class="p-4 border-t border-slate-800">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button class="w-full text-left px-4 py-2 bg-red-600 rounded hover:bg-red-700">
+                <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 rounded-lg hover:bg-red-600 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
                     Logout
                 </button>
             </form>
         </div>
+
     </aside>
 
     <!-- Content -->
@@ -60,6 +81,10 @@
     </main>
 
 </div>
+
+<script>
+    lucide.createIcons();
+</script>
 
 </body>
 </html>

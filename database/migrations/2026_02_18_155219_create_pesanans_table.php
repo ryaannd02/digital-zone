@@ -15,15 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
+            $table->foreignId('alamat_id')->nullable()->constrained('alamats')->nullOnDelete();
+            $table->string('layanan_pengiriman')->nullable();
+            $table->integer('ongkir')->default(0);
             $table->integer('total_harga');
+            $table->integer('total_bayar')->default(0);
 
-            // STATUS PEMBAYARAN
-            $table->enum('payment_status', ['pending', 'paid', 'failed'])
-                ->default('pending');
-
-            // STATUS PESANAN (OPERASIONAL)
-            $table->enum('order_status', ['tertunda', 'diproses', 'dikirim', 'selesai'])
-                ->default('tertunda');
+            $table->enum('payment_status', ['pending','paid','failed'])->default('pending');
+            $table->enum('order_status', ['tertunda','diproses','dikirim','selesai'])->default('tertunda');
 
             $table->timestamps();
         });

@@ -21,6 +21,13 @@ class KeranjangController extends Controller
 
     public function store($produk_id)
     {
+        // 🔒 Validasi produk ada
+        $produk = Produk::find($produk_id);
+
+        if (!$produk) {
+            return back()->with('error', 'Produk tidak ditemukan');
+        }
+
         $item = Keranjang::where('user_id', Auth::id())
             ->where('produk_id', $produk_id)
             ->first();
@@ -41,15 +48,32 @@ class KeranjangController extends Controller
 
     public function update(Request $request, $id)
     {
-        $item = Keranjang::findOrFail($id);
-        $item->update(['qty' => $request->qty]);
+        $item = Keranjang::with('produk')->findOrFail($id);
+
+        // 🔒 Validasi produk masih ada
+        if (!$item->produk) {
+            $item->delete();
+            return back()->with('error', 'Produk sudah tidak tersedia');
+        }
+
+        // 🔒 Validasi qty minimal
+        $qty = max(1, (int) $request->qty);
+
+        // 🔒 Validasi stok (optional tapi bagus)
+        if ($qty > $item->produk->stok) {
+            return back()->with('error', 'Stok tidak mencukupi');
+        }
+
+        $item->update(['qty' => $qty]);
 
         return back();
     }
 
     public function destroy($id)
     {
-        Keranjang::findOrFail($id)->delete();
+        $item = Keranjang::findOrFail($id);
+        $item->delete();
+
         return back();
     }
 }

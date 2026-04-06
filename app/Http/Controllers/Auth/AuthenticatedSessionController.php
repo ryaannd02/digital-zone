@@ -16,13 +16,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): View
     {
-        $role = 'customer';
-
-        if ($request->is('admin/login')) {
-            $role = 'admin';
-        } elseif ($request->is('petugas/login')) {
-            $role = 'petugas';
-        }
+        // hanya untuk tampilan (judul login)
+        $role = $request->query('role', 'customer');
 
         return view('auth.login', compact('role'));
     }
@@ -30,42 +25,42 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+public function store(Request $request): RedirectResponse
+{
+    $credentials = $request->only('email', 'password');
+    $loginRole = $request->input('role'); // 🔥 dari form
 
-        $request->session()->regenerate();
+    $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-        $user = auth()->user();
-
-        // Cek URL login
-        if ($request->is('admin/login')) {
-
-            if ($user->role !== 'admin') {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Anda bukan admin.'
-                ]);
-            }
-
-            return redirect()->intended('/admin/dashboard');
-        }
-
-        if ($request->is('petugas/login')) {
-
-            if ($user->role !== 'petugas') {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Anda bukan petugas.'
-                ]);
-            }
-
-            return redirect()->intended('/petugas/dashboard');
-        }
-
-        // Default customer
-        return redirect()->intended(route('dashboard'));
+    if (!$user) {
+        return back()->withErrors([
+            'email' => 'Email tidak ditemukan'
+        ]);
     }
+
+    // 🔥 VALIDASI ROLE
+    if ($user->role !== $loginRole) {
+        return back()->withErrors([
+            'email' => 'Akun tidak sesuai dengan halaman login'
+        ]);
+    }
+
+    // 🔥 LOGIN
+    if (!Auth::attempt($credentials)) {
+        return back()->withErrors([
+            'email' => 'Password salah'
+        ]);
+    }
+
+    $request->session()->regenerate();
+
+    // 🔥 REDIRECT
+    return match ($user->role) {
+        'admin' => redirect('/admin/dashboard'),
+        'petugas' => redirect('/petugas/dashboard'),
+        default => redirect()->route('dashboard'),
+    };
+}
     /**
      * Destroy an authenticated session.
      */
@@ -74,7 +69,6 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

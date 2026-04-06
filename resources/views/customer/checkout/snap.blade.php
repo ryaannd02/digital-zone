@@ -1,20 +1,51 @@
-@extends('guest.layout')
+@extends('customer.layout')
 
 @section('content')
 
-<div class="max-w-2xl mx-auto py-20 text-center">
+<div class="min-h-[70vh] flex items-center justify-center px-4">
 
-    <div class="bg-white rounded-2xl shadow p-10">
+    <div class="bg-white border rounded-2xl p-10 text-center max-w-md w-full shadow-sm">
 
-        <h2 class="text-2xl font-bold mb-4 text-[#F5AD1B]">
+        <!-- ICON LOADING -->
+        <div class="flex justify-center mb-6">
+
+            <div class="relative">
+
+                <!-- SPINNER -->
+                <div class="w-16 h-16 border-4 border-red-200 border-t-red-600 rounded-full animate-spin"></div>
+
+                <!-- ICON CENTER -->
+                <div class="absolute inset-0 flex items-center justify-center">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6 text-red-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                              d="M12 8c-1.657 0-3 1.343-3 3m0 0c0 1.657 1.343 3 3 3m-3-3h6"/>
+
+                    </svg>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TITLE -->
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">
             Memproses Pembayaran
         </h2>
 
-        <p class="text-gray-600 mb-6">
-            Mohon tunggu, jendela pembayaran akan muncul otomatis.
+        <!-- DESC -->
+        <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+            Mohon tunggu sebentar, kami sedang menghubungkan ke sistem pembayaran.
         </p>
 
-        <div class="animate-pulse text-gray-400">
+        <!-- STATUS -->
+        <div class="text-sm text-gray-400 animate-pulse">
             Menghubungkan ke Midtrans...
         </div>
 

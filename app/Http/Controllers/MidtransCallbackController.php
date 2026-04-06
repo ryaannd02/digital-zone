@@ -20,22 +20,25 @@ class MidtransCallbackController extends Controller
 
         \Log::info('TRANSACTION STATUS: ' . $transactionStatus);
         \Log::info('FRAUD STATUS: ' . $fraudStatus);
+        
 
         if (!$orderId) {
             return response()->json(['message' => 'No Order ID'], 400);
         }
 
         // Format ORDER-21-1771780007
-        $explode = explode('-', $orderId);
-        $realId = $explode[1] ?? null;
+        \Log::info('ORDER ID: ' . $orderId);
 
-        \Log::info('REAL ID: ' . $realId);
+        // 🔥 pecah order_id
+        $parts = explode('-', $orderId);
 
-        if (!$realId) {
-            return response()->json(['message' => 'Invalid Order ID'], 400);
-        }
+        // ambil DGZ-xxxx
+        $kode = $parts[0] . '-' . $parts[1];
 
-        $pesanan = Pesanan::find($realId);
+        \Log::info('KODE ASLI: ' . $kode);
+
+        // cari pesanan
+        $pesanan = Pesanan::where('kode', $kode)->first();
 
         \Log::info('PESANAN FOUND: ' . ($pesanan ? 'YES' : 'NO'));
 
@@ -51,24 +54,85 @@ class MidtransCallbackController extends Controller
             $transactionStatus === 'capture'
         ) {
 
-            $pesanan->update([
-                'payment_status' => 'paid',
-                'order_status'   => 'diproses',
-            ]);
+            // ❗ cegah double update
+            if ($pesanan->payment_status !== 'paid') {
 
-            \Log::info('STATUS DIUBAH KE PAID');
+            $paymentType = $data['payment_type'] ?? null;
+            $paymentDetail = '-';
+
+            switch ($paymentType) {
+
+                case 'bank_transfer':
+                    $paymentDetail = $data['va_numbers'][0]['bank'] ?? 'Bank Transfer';
+                    break;
+
+                case 'echannel':
+                    $paymentDetail = 'Mandiri';
+                    break;
+
+                case 'credit_card':
+                    $paymentDetail = strtoupper($data['bank'] ?? 'CARD') . ' ' . strtoupper($data['card_type'] ?? '');
+                    break;
+
+                case 'qris':
+                    $paymentDetail = 'QRIS';
+                    break;
+
+                case 'gopay':
+                    $paymentDetail = 'GoPay';
+                    break;
+
+                case 'shopeepay':
+                    $paymentDetail = 'ShopeePay';
+                    break;
+
+                default:
+                    $paymentDetail = ucfirst($paymentType ?? '-');
+                    break;
+            }
+
+            \Log::info('PAYMENT TYPE: ' . $paymentType);
+            \Log::info('PAYMENT DETAIL: ' . $paymentDetail);
+
+                $pesanan->update([
+                    'payment_status' => 'paid',
+                    'order_status'   => 'diproses',
+                    'payment_method' => $paymentType,
+                    'payment_detail' => $paymentDetail,
+                ]); 
+
+                \App\Models\Notification::create([
+                    'user_id' => $pesanan->user_id,
+                    'type' => 'order',
+                    'title' => 'Pesanan Diproses 📦',
+                    'message' => 'Pesanan #' . $pesanan->kode . ' sedang diproses oleh penjual.',
+                ]);
+
+                \Log::info('STATUS DIUBAH KE PAID');
+
+            } else {
+                \Log::info('SKIP, SUDAH PAID');
+            }
         }
+
+        
 
         // ==============================
         // STATUS PENDING
         // ==============================
         elseif ($transactionStatus === 'pending') {
 
-            $pesanan->update([
-                'payment_status' => 'pending',
-            ]);
+            // ❗ JANGAN override kalau sudah paid
+            if ($pesanan->payment_status !== 'paid') {
 
-            \Log::info('STATUS TETAP PENDING');
+                $pesanan->update([
+                    'payment_status' => 'pending',
+                ]);
+
+                \Log::info('STATUS SET PENDING');
+            } else {
+                \Log::info('SKIP PENDING, SUDAH PAID');
+            }
         }
 
         // ==============================

@@ -4,56 +4,123 @@
     <meta charset="UTF-8">
     <title>Login - DigitalZone</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-200 flex items-center justify-center min-h-screen">
+<body class="bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center min-h-screen">
 
-<div class="bg-white w-full max-w-md rounded-xl shadow-lg p-8">
+@php
+    $role = $role ?? 'customer';
 
-    <h1 class="text-3xl font-bold text-center text-[#AA1B25]">
-        DigitalZone
-    </h1>
+    if ($role === 'admin') {
+        $title = 'Login Admin';
+        $color = 'bg-slate-900'; // background utama
+        $accent = 'text-slate-800'; // teks / highlight
+        $buttonColor = 'bg-slate-900 hover:bg-slate-800'; // tombol
+        $icon = 'shield';
+    } elseif ($role === 'petugas') {
+        $title = 'Login Petugas';
+        $color = 'bg-gradient-to-r from-blue-600 to-blue-800';
+        $accent = 'text-blue-600';
+        $buttonColor = 'bg-blue-600 hover:bg-blue-700';
+        $icon = 'briefcase';
+    } else {
+        $title = 'Login Customer';
+        $color = 'bg-gradient-to-r from-[#AA1B25] to-[#7A121A]';
+        $accent = 'text-[#AA1B25]';
+        $buttonColor = 'bg-[#AA1B25] hover:opacity-90';
+        $icon = 'shopping-cart';
+    }
+@endphp
 
-    <h2 class="text-center text-[#F5AD1B] font-semibold mt-1 mb-6">
-        Masuk
-    </h2>
+<div class="w-full max-w-md">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <!-- CARD -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
 
-        <!-- Username / Email -->
-        <div class="mb-4">
-            <label class="text-gray-600 text-sm">Email</label>
-            <input type="email"
-                   name="email"
-                   required
-                   class="w-full mt-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#AA1B25]">
+        <!-- HEADER -->
+        <div class="{{ $color }} py-10 px-6 text-center text-white">
+
+            <!-- ICON -->
+            <div class="flex justify-center mb-3">
+                <i data-lucide="{{ $icon }}" class="w-10 h-10"></i>
+            </div>
+
+            <!-- BRAND -->
+            <h1 class="text-2xl font-bold tracking-wide">
+                DigitalZone
+            </h1>
+
+            <!-- ROLE -->
+            <p class="text-sm opacity-90 mt-1">
+                {{ $title }}
+            </p>
+
+            <div class="w-16 h-1 bg-white/40 mx-auto mt-4 rounded-full"></div>
+
         </div>
 
-        <!-- Password -->
-        <div class="mb-6">
-            <label class="text-gray-600 text-sm">Password</label>
-            <input type="password"
-                   name="password"
-                   required
-                   class="w-full mt-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#AA1B25]">
+        <!-- FORM -->
+        <div class="p-8">
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <input type="hidden" name="role" value="{{ $role }}">
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label class="text-sm text-gray-600">Email</label>
+                    <div class="relative">
+                        <input type="email" name="email" required
+                            class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-gray-300 focus:outline-none">
+                        <i data-lucide="mail"class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-6">
+                    <label class="text-sm text-gray-600">Password</label>
+                    <div class="relative">
+                        <input type="password" name="password" required
+                            class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-gray-300 focus:outline-none">
+                        <i data-lucide="lock"class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <button type="submit"
+                    class="w-full text-white py-2.5 rounded-lg font-semibold transition {{ $buttonColor }}">
+                    Masuk
+                </button>
+
+            </form>
+
+            <!-- Register -->
+            @if($role === 'customer')
+            <p class="text-center text-sm mt-5 text-gray-600">
+                Belum punya akun?
+                <a href="{{ route('register') }}"
+                   class="{{ $accent }} font-semibold hover:underline">
+                    Daftar
+                </a>
+            </p>
+            @endif
+
         </div>
 
-        <button type="submit"
-                class="w-full bg-[#AA1B25] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition">
-            Masuk
-        </button>
+    </div>
 
-    </form>
-
-    <p class="text-center text-sm mt-4 text-gray-600">
-        Belum punya akun?
-        <a href="{{ route('register') }}"
-           class="text-[#F5AD1B] font-semibold hover:underline">
-            Daftar
-        </a>
+    <p class="text-center text-xs text-gray-500 mt-4">
+        © {{ date('Y') }} DigitalZone
     </p>
 
 </div>
+
+<script>
+    lucide.createIcons();
+</script>
 
 </body>
 </html>

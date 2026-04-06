@@ -1,156 +1,220 @@
-@extends('guest.layout')
+@extends('customer.layout')
 
 @section('content')
 
-<div class="max-w-6xl mx-auto py-10">
+<div class="max-w-7xl mx-auto py-10 px-4 md:px-6">
 
-    <h2 class="text-2xl font-bold text-[#F5AD1B] mb-8">
+    <!-- HEADER -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+
+        <!-- ICON -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-6 h-6 text-red-600"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M5 13l4 4L19 7"/>
+        </svg>
+
         Checkout
+
     </h2>
 
     <form action="{{ route('checkout.process') }}" method="POST">
         @csrf
 
-        <div class="grid grid-cols-3 gap-8">
+        {{-- HIDDEN (TIDAK DIUBAH) --}}
+        @if(!empty($selectedItems))
+            @foreach($selectedItems as $id)
+                <input type="hidden" name="selected_items[]" value="{{ $id }}">
+            @endforeach
+        @endif
 
-            {{-- ========================= --}}
-            {{-- LEFT SECTION --}}
-            {{-- ========================= --}}
-            <div class="col-span-2 space-y-8">
+        @if(empty($selectedItems))
+            <input type="hidden" name="produk_id" value="{{ $items[0]->produk->id }}">
+            <input type="hidden" name="qty" value="{{ $items[0]->qty }}">
+        @endif
 
-                {{-- ========================= --}}
-                {{-- ALAMAT --}}
-                {{-- ========================= --}}
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h3 class="font-semibold mb-4 text-lg">
+        <div class="grid lg:grid-cols-3 gap-8">
+
+            <!-- LEFT -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- ALAMAT -->
+                <div class="bg-white border rounded-2xl p-6">
+
+                    <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+
+                        <!-- ICON -->
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-5 h-5 text-red-600"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                  d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243A8 8 0 1117.657 16.657z"/>
+                        </svg>
+
                         Alamat Pengiriman
+
                     </h3>
 
                     @foreach($alamats as $alamat)
-                        <label class="block border p-4 rounded-lg mb-3 cursor-pointer hover:border-[#AA1B25]">
 
-                            <input type="radio"
-                                   name="alamat_id"
-                                   value="{{ $alamat->id }}"
-                                   {{ $alamat->is_primary ? 'checked' : '' }}
-                                   class="mr-2">
+                    <label class="flex gap-3 border rounded-xl p-4 mb-3 cursor-pointer hover:border-red-500 transition">
 
-                            <span class="font-semibold">
+                        <input type="radio"
+                               name="alamat_id"
+                               value="{{ $alamat->id }}"
+                               {{ $alamat->is_primary ? 'checked' : '' }}
+                               class="mt-1">
+
+                        <div>
+
+                            <p class="font-semibold text-gray-800">
                                 {{ $alamat->nama_penerima }}
-                            </span>
-                            ({{ $alamat->label }})
+                                <span class="text-xs text-gray-500">({{ $alamat->label }})</span>
+                            </p>
 
-                            <div class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 mt-1">
                                 {{ $alamat->alamat_lengkap }}
-                                <br>
-                                {{ $alamat->no_telepon }}
-                            </div>
+                            </p>
 
-                        </label>
+                            <p class="text-sm text-gray-500">
+                                {{ $alamat->no_telepon }}
+                            </p>
+
+                        </div>
+
+                    </label>
+
                     @endforeach
+
                 </div>
 
-                {{-- ========================= --}}
-                {{-- PRODUK --}}
-                {{-- ========================= --}}
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h3 class="font-semibold mb-4 text-lg">
+
+                <!-- PRODUK -->
+                <div class="bg-white border rounded-2xl p-6">
+
+                    <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+
+                        <!-- ICON -->
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-5 h-5 text-red-600"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                  d="M3 3h2l.4 2M7 13h10l4-8H5.4"/>
+                        </svg>
+
                         Produk Dipesan
+
                     </h3>
 
                     @foreach($items as $item)
 
-                        <div class="flex justify-between items-center border-b py-4">
+                    <div class="flex justify-between items-center border-b py-4 last:border-none">
 
-                            <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4">
+
+                            <div class="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center p-2">
                                 <img src="{{ asset('storage/' . $item->produk->gambar_1) }}"
-                                     class="w-16 h-16 object-cover rounded">
-
-                                <div>
-                                    <p class="font-semibold">
-                                        {{ $item->produk->nama_produk }}
-                                    </p>
-                                    <p class="text-sm text-gray-500">
-                                        Rp {{ number_format($item->produk->harga) }}
-                                        x {{ $item->qty }}
-                                    </p>
-                                </div>
+                                     class="max-h-full object-contain">
                             </div>
 
-                            <div class="font-bold">
-                                Rp {{ number_format($item->qty * $item->produk->harga) }}
+                            <div>
+                                <p class="font-medium text-gray-800">
+                                    {{ $item->produk->nama_produk }}
+                                </p>
+
+                                <p class="text-sm text-gray-500">
+                                    Rp {{ number_format($item->produk->harga) }} × {{ $item->qty }}
+                                </p>
                             </div>
 
                         </div>
 
-                        {{-- Hidden selected items --}}
-                        <input type="hidden"
-                               name="selected_items[]"
-                               value="{{ $item->id }}">
+                        <p class="font-semibold text-gray-800">
+                            Rp {{ number_format($item->qty * $item->produk->harga) }}
+                        </p>
+
+                    </div>
 
                     @endforeach
+
                 </div>
 
-                {{-- ========================= --}}
-                {{-- PENGIRIMAN --}}
-                {{-- ========================= --}}
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h3 class="font-semibold mb-4 text-lg">
-                        Metode Pengiriman (JNE)
+
+                <!-- PENGIRIMAN -->
+                <div class="bg-white border rounded-2xl p-6">
+
+                    <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+
+                        <!-- ICON -->
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-5 h-5 text-red-600"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9 17v-6h13v6M9 17H5a2 2 0 01-2-2v-5h6m0 0V5a2 2 0 012-2h2"/>
+                        </svg>
+
+                        Metode Pengiriman
+
                     </h3>
 
-                    <label class="block mb-3">
-                        <input type="radio"
-                               name="layanan"
-                               value="reguler"
-                               data-ongkir="14000"
-                               class="mr-2 layanan-radio"
-                               checked>
-                        Reguler (1-3 hari kerja) - Rp 14.000
+                    @foreach([
+                        ['reguler','1-3 hari kerja',14000],
+                        ['besok','1 hari kerja',22000],
+                        ['ekonomis','1-7 hari kerja',8000]
+                    ] as $index => $layanan)
+
+                    <label class="flex justify-between border rounded-xl p-4 mb-3 cursor-pointer hover:border-red-500">
+
+                        <div class="flex items-center gap-3">
+                            <input type="radio"
+                                   name="layanan"
+                                   value="{{ $layanan[0] }}"
+                                   data-ongkir="{{ $layanan[2] }}"
+                                   class="layanan-radio"
+                                   {{ $index==0 ? 'checked' : '' }}>
+
+                            <span class="text-sm text-gray-700">
+                                {{ ucfirst($layanan[0]) }} ({{ $layanan[1] }})
+                            </span>
+                        </div>
+
+                        <span class="font-medium text-gray-800">
+                            Rp {{ number_format($layanan[2]) }}
+                        </span>
+
                     </label>
 
-                    <label class="block mb-3">
-                        <input type="radio"
-                               name="layanan"
-                               value="besok"
-                               data-ongkir="22000"
-                               class="mr-2 layanan-radio">
-                        Besok Sampai (1 hari kerja) - Rp 22.000
-                    </label>
+                    @endforeach
 
-                    <label class="block">
-                        <input type="radio"
-                               name="layanan"
-                               value="ekonomis"
-                               data-ongkir="8000"
-                               class="mr-2 layanan-radio">
-                        Ekonomis (1-7 hari kerja) - Rp 8.000
-                    </label>
                 </div>
 
             </div>
 
-            {{-- ========================= --}}
-            {{-- RIGHT SECTION --}}
-            {{-- ========================= --}}
-            <div class="bg-white p-6 rounded-xl shadow h-fit">
 
-                <h3 class="font-semibold mb-6 text-lg">
+            <!-- RIGHT -->
+            <div class="bg-white border rounded-2xl p-6 h-fit sticky top-24">
+
+                <h3 class="font-semibold text-lg mb-5">
                     Ringkasan Belanja
                 </h3>
 
-                <div class="flex justify-between mb-3">
+                <div class="flex justify-between text-sm mb-3">
                     <span>Subtotal</span>
-                    <span id="subtotal">
-                        Rp {{ number_format($subtotal) }}
-                    </span>
+                    <span id="subtotal">Rp {{ number_format($subtotal) }}</span>
                 </div>
 
-                <div class="flex justify-between mb-3">
+                <div class="flex justify-between text-sm mb-3">
                     <span>Ongkir</span>
-                    <span id="ongkirText">
-                        Rp 14.000
-                    </span>
+                    <span id="ongkirText">Rp 14.000</span>
                 </div>
 
                 <hr class="my-4">
@@ -163,7 +227,7 @@
                 </div>
 
                 <button type="submit"
-                        class="w-full mt-6 bg-[#AA1B25] text-white py-3 rounded-xl font-semibold hover:opacity-90">
+                        class="w-full mt-6 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition">
                     Bayar Sekarang
                 </button>
 
@@ -177,7 +241,7 @@
 
 
 {{-- ========================= --}}
-{{-- SCRIPT UPDATE TOTAL --}}
+{{-- SCRIPT --}}
 {{-- ========================= --}}
 <script>
 

@@ -1,58 +1,149 @@
-@extends('guest.layout')
+@extends('customer.layout')
 
 @section('content')
 
-<div class="max-w-3xl mx-auto py-10">
+<div class="max-w-3xl mx-auto py-10 px-4">
 
-    <h2 class="text-2xl font-bold text-[#F5AD1B] mb-8">
+    <!-- HEADER -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+
+        <!-- LOCATION ICON -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-6 h-6 text-red-600"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243A8 8 0 1117.657 16.657z"/>
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+
         Tambah Alamat
+
     </h2>
 
+    <!-- FORM -->
     <form action="{{ route('alamat.store') }}" method="POST"
-          class="bg-white shadow rounded-xl p-8 space-y-6">
+          class="bg-white border rounded-2xl p-8 space-y-6 shadow-sm">
         @csrf
 
+        <!-- NAMA -->
         <div>
-            <label class="block mb-2 font-semibold">Nama Penerima</label>
-            <input type="text" name="nama_penerima"
-                   class="w-full border rounded-lg p-3"
-                   required>
+            <label class="text-sm font-medium text-gray-700 mb-1 block">
+                Nama Penerima
+            </label>
+
+            <div class="relative">
+                <input type="text" name="nama_penerima"
+                       class="w-full border rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-red-200 outline-none"
+                       required>
+
+                <!-- USER ICON -->
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                              d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"/>
+                    </svg>
+                </div>
+            </div>
         </div>
 
+        <!-- TELEPON -->
         <div>
-            <label class="block mb-2 font-semibold">No Telepon</label>
-            <input type="text" name="no_telepon"
-                   class="w-full border rounded-lg p-3"
-                   required>
+            <label class="text-sm font-medium text-gray-700 mb-1 block">
+                No Telepon
+            </label>
+
+            <div class="relative">
+                <input type="text" name="no_telepon"
+                       class="w-full border rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-red-200 outline-none"
+                       required>
+
+                <!-- PHONE ICON -->
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                              d="M3 5a2 2 0 012-2h2l2 5-2 2a11 11 0 005 5l2-2 5 2v2a2 2 0 01-2 2A16 16 0 013 5z"/>
+                    </svg>
+                </div>
+            </div>
         </div>
 
+        <!-- ALAMAT -->
         <div>
-            <label class="block mb-2 font-semibold">Alamat Lengkap</label>
-            <textarea name="alamat_lengkap"
-                      class="w-full border rounded-lg p-3"
-                      rows="4"
-                      required></textarea>
+            <label class="text-sm font-medium text-gray-700 mb-1 block">
+                Alamat Lengkap
+            </label>
+
+            <div class="relative">
+                <textarea name="alamat_lengkap"
+                          rows="4"
+                          class="w-full border rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-red-200 outline-none"
+                          required></textarea>
+
+                <!-- MAP ICON -->
+                <div class="absolute left-3 top-4 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                              d="M9 20l-5-2V6l5 2m0 12l6-2m-6 2V8m6 10l5 2V6l-5-2m0 12V4"/>
+                    </svg>
+                </div>
+            </div>
         </div>
 
+        <!-- LABEL -->
         <div>
-            <label class="block mb-2 font-semibold">Label</label>
-            <select name="label"
-                    class="w-full border rounded-lg p-3"
-                    required>
-                <option value="rumah">Rumah</option>
-                <option value="kantor">Kantor</option>
-            </select>
+            <label class="text-sm font-medium text-gray-700 mb-1 block">
+                Label
+            </label>
+
+            <div class="relative">
+                <select name="label"
+                        class="w-full border rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-red-200 outline-none"
+                        required>
+                    <option value="rumah">Rumah</option>
+                    <option value="kantor">Kantor</option>
+                </select>
+
+                <!-- TAG ICON -->
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                              d="M7 7h.01M7 3h5l9 9-5 5-9-9V3z"/>
+                    </svg>
+                </div>
+            </div>
         </div>
 
-        <div class="flex justify-between items-center pt-4">
+        <!-- ACTION -->
+        <div class="flex justify-between items-center pt-6">
+
             <a href="{{ route('alamat.index') }}"
-               class="text-gray-600">
+               class="text-gray-500 hover:text-gray-700 text-sm">
                 ← Kembali
             </a>
 
-            <button class="bg-[#AA1B25] text-white px-6 py-3 rounded-lg">
-                Simpan
+            <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold transition">
+                Simpan Alamat
             </button>
+
         </div>
 
     </form>
