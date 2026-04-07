@@ -1,16 +1,25 @@
-login admin
-/admin/login (harus logout http://127.0.0.1:8000/)
+Tools:
+Tailwind CSS
+MySQL
+Midtrans
+Ngrok (untuk callback Midtrans 'ngrok http 8000')
+Laragon
 
-admin@digitalzone.com
-password
+Akses Login:
 
-login petugas
-/petugas/login (harus logout http://127.0.0.1:8000/)
+ADMIN
+URL: `/admin/login`
+Email: `admin@digitalzone.com`
+Password: `password`
 
-framework yang digunakan:
-Tailwind
+Harus logout terlebih dahulu dari akun lain sebelum login sebagai admin
 
-Payment Midtrans
-Ngrok
+PETUGAS
+URL: `/petugas/login`
+Harus logout terlebih dahulu dari akun lain sebelum login sebagai petugas.
 
-jalankan di terminal ngrok http 8000
+ALUR PEMBAYARAN
+Setelah checkout, pengguna memiliki waktu 10 menit untuk melakukan pembayaran jika snap midtrans ke close.
+Jika pembayaran tidak dilakukan, pesanan akan otomatis dibatalkan.
+Stok produk akan dikembalikan secara otomatis jika pesanan gagal atau expired.
+
