@@ -183,7 +183,7 @@ class CheckoutController extends Controller
         Notification::create([
         'user_id' => Auth::id(),
         'type' => 'checkout',
-        'title' => 'Pesanan Berhasil Dibuat 🎉',
+        'title' => 'Pesanan Berhasil Dibuat',
         'message' => 'Pesanan dengan kode #' . $pesanan->kode . ' berhasil dibuat dengan total pembayaran sebesar Rp ' . number_format($totalBayar) . '. Silakan segera melakukan pembayaran sesuai metode yang tersedia agar pesanan dapat segera diproses oleh sistem kami.',
         ]);
 

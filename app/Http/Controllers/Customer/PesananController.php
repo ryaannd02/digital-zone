@@ -42,7 +42,7 @@ class PesananController extends Controller
             Notification::create([
                 'user_id' => $order->user_id,
                 'type' => 'payment',
-                'title' => 'Pembayaran Gagal ❌',
+                'title' => 'Pembayaran Gagal',
                 'message' => 'Pesanan dengan kode' . $order->kode . ' telah dibatalkan secara otomatis karena tidak dilakukan pembayaran dalam batas waktu 10 menit. Silakan lakukan pemesanan ulang apabila masih ingin melanjutkan pembelian produk tersebut.',
             ]);
         }

@@ -65,9 +65,9 @@ class PesananController extends Controller
         'user_id' => $pesanan->user_id,
         'type' => 'status',
         'title' => match($request->order_status) {
-            'diproses' => 'Pesanan Diproses 📦',
-            'dikirim' => 'Pesanan Dikirim 🚚',
-            'selesai' => 'Pesanan Selesai ✅',
+            'diproses' => 'Pesanan Diproses',
+            'dikirim' => 'Pesanan Dikirim',
+            'selesai' => 'Pesanan Selesai',
             default => 'Update Pesanan'
         },
         'message' => match($request->order_status) {

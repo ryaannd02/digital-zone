@@ -23,3 +23,4 @@ Setelah checkout, pengguna memiliki waktu 10 menit untuk melakukan pembayaran ji
 Jika pembayaran tidak dilakukan, pesanan akan otomatis dibatalkan.
 Stok produk akan dikembalikan secara otomatis jika pesanan gagal atau expired.
 
+Import database ddari file digital_zone.sql
