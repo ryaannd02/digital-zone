@@ -19,26 +19,30 @@ class KeranjangController extends Controller
         return view('customer.keranjang.index', compact('keranjang'));
     }
 
-    public function store($produk_id)
+    public function store(Request $request, $produk_id)
     {
-        // 🔒 Validasi produk ada
         $produk = Produk::find($produk_id);
 
         if (!$produk) {
             return back()->with('error', 'Produk tidak ditemukan');
         }
 
+        // 🔥 AMBIL QTY DARI FORM
+        $qty = max(1, (int) $request->qty);
+
         $item = Keranjang::where('user_id', Auth::id())
             ->where('produk_id', $produk_id)
             ->first();
 
         if ($item) {
-            $item->increment('qty');
+            // 🔥 TAMBAH SESUAI QTY (BUKAN +1)
+            $item->qty += $qty;
+            $item->save();
         } else {
             Keranjang::create([
                 'user_id' => Auth::id(),
                 'produk_id' => $produk_id,
-                'qty' => 1,
+                'qty' => $qty, // 🔥 FIX DI SINI
             ]);
         }
 
@@ -50,23 +54,28 @@ class KeranjangController extends Controller
     {
         $item = Keranjang::with('produk')->findOrFail($id);
 
-        // 🔒 Validasi produk masih ada
+        // 🔒 Produk tidak ada
         if (!$item->produk) {
             $item->delete();
-            return back()->with('error', 'Produk sudah tidak tersedia');
+            return response()->json([
+                'error' => 'Produk sudah tidak tersedia'
+            ], 400);
         }
 
-        // 🔒 Validasi qty minimal
         $qty = max(1, (int) $request->qty);
 
-        // 🔒 Validasi stok (optional tapi bagus)
+        // 🔒 Stok tidak cukup
         if ($qty > $item->produk->stok) {
-            return back()->with('error', 'Stok tidak mencukupi');
+            return response()->json([
+                'error' => 'Stok tidak mencukupi'
+            ], 400);
         }
 
         $item->update(['qty' => $qty]);
 
-        return back();
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     public function destroy($id)

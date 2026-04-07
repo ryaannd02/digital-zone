@@ -11,6 +11,6 @@ framework yang digunakan:
 Tailwind
 
 Payment Midtrans
-pakai ngrok
+Ngrok
 
 jalankan di terminal ngrok http 8000

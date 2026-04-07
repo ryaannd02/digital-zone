@@ -151,64 +151,98 @@
     <div class="space-y-6">
 
         <!-- TOTAL -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+<!-- TOTAL -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
 
-            <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <i data-lucide="credit-card" class="w-4 h-4"></i>
-                Ringkasan Pembayaran
-            </h2>
+    <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <i data-lucide="credit-card" class="w-4 h-4"></i>
+        Ringkasan Pembayaran
+    </h2>
 
-            <div class="flex justify-between text-sm mb-2">
-                <span>Total Bayar</span>
-                <span class="font-bold text-[#AA1B25] text-lg">
-                    Rp {{ number_format($pesanan->total_bayar) }}
-                </span>
-            </div>
+    <div class="space-y-2 text-sm">
 
+        <!-- TOTAL HARGA -->
+        <div class="flex justify-between">
+            <span class="text-gray-500">Total Harga</span>
+            <span>Rp {{ number_format($pesanan->total_harga) }}</span>
         </div>
+
+        <!-- ONGKIR -->
+        <div class="flex justify-between">
+            <span class="text-gray-500">Ongkir</span>
+            <span>Rp {{ number_format($pesanan->ongkir) }}</span>
+        </div>
+
+        <hr class="my-2">
+
+        <!-- TOTAL BAYAR -->
+        <div class="flex justify-between items-center font-semibold">
+            <span class="text-gray-800">Total Bayar</span>
+            <span class="text-[#AA1B25] text-lg">
+                Rp {{ number_format($pesanan->total_bayar) }}
+            </span>
+        </div>
+
+    </div>
+
+</div>
 
         <!-- UPDATE STATUS -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
 
-            <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <i data-lucide="settings" class="w-4 h-4"></i>
-                Update Status
-            </h2>
+    <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <i data-lucide="settings" class="w-4 h-4"></i>
+        Update Status
+    </h2>
 
-            @if($pesanan->order_status !== 'selesai')
+    @if($pesanan->order_status !== 'selesai')
 
-            <form method="POST"
-                  action="{{ route('petugas.pesanan.updateStatus', $pesanan->id) }}"
-                  class="space-y-3">
-                @csrf
-                @method('PATCH')
+        @php
+            $nextStatus = null;
 
-                <select name="order_status"
-                        class="w-full border px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            if ($pesanan->order_status === 'diproses') {
+                $nextStatus = 'dikirim';
+            } elseif ($pesanan->order_status === 'dikirim') {
+                $nextStatus = 'selesai';
+            }
+        @endphp
 
-                    @if($pesanan->order_status === 'diproses')
-                        <option value="dikirim">Kirim</option>
-                    @elseif($pesanan->order_status === 'dikirim')
-                        <option value="selesai">Selesaikan</option>
-                    @endif
+        @if($nextStatus)
+        <form method="POST"
+              action="{{ route('petugas.pesanan.updateStatus', $pesanan->id) }}"
+              class="space-y-3">
+            @csrf
+            @method('PATCH')
 
-                </select>
+            <!-- INFO -->
+            <div class="text-sm text-gray-600">
+                {{ ucfirst($pesanan->order_status) }}
+                <span class="mx-1 text-gray-400">→</span>
+                <span class="font-semibold text-green-600">
+                    {{ ucfirst($nextStatus) }}
+                </span>
+            </div>
 
-                <button class="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    Update Status
-                </button>
+            <!-- HIDDEN -->
+            <input type="hidden" name="order_status" value="{{ $nextStatus }}">
 
-            </form>
+            <!-- BUTTON -->
+            <button class="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                Update ke {{ ucfirst($nextStatus) }}
+            </button>
 
-            @else
-                <p class="text-green-600 font-semibold flex items-center gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    Pesanan sudah selesai
-                </p>
-            @endif
+        </form>
+        @endif
 
-        </div>
+    @else
+        <p class="text-green-600 font-semibold flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            Pesanan sudah selesai
+        </p>
+    @endif
+
+</div>
 
     </div>
 

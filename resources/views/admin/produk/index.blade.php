@@ -177,7 +177,8 @@
 </div>
 
 <!-- BULK -->
-<form id="bulkForm" method="POST" action="{{ route('admin.produk.bulkDelete') }}">
+<form id="bulkForm" method="POST" action="{{ route('admin.produk.bulkDelete') }}"
+      onsubmit="return confirmBulkDelete()">
     @csrf
     @method('DELETE')
 
@@ -193,12 +194,55 @@
     {{ $produks->links() }}
 </div>
 
+<div id="deleteModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-80 text-center shadow-lg">
+        <p class="text-gray-700 mb-4 font-medium">Yakin ingin menghapus produk?</p>
+
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="closeModal()"
+                    class="px-4 py-2 bg-gray-200 rounded-lg">
+                    Batal
+                </button>
+
+                <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Hapus
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 document.getElementById('checkAll').addEventListener('click', function() {
     document.querySelectorAll('.itemCheckbox').forEach(cb => {
         cb.checked = this.checked;
     });
 });
+
+function openModal(url) {
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('deleteForm').action = url;
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+function confirmBulkDelete() {
+    const checked = document.querySelectorAll('.itemCheckbox:checked');
+
+    if (checked.length === 0) {
+        alert('Pilih minimal 1 produk!');
+        return false;
+    }
+
+    return confirm('Yakin ingin menghapus produk terpilih?');
+}
 </script>
 
 @endsection

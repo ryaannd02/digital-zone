@@ -127,7 +127,7 @@
             </h2>
 
             <!-- 🔥 FIX GAMBAR (NO CROP) -->
-            <div class="w-full h-56 bg-gray-50 flex items-center justify-center rounded-lg mb-4 border">
+            <div class="w-full h-56 bg-white-50 flex items-center justify-center rounded-lg mb-4 border">
                 <img id="modalImage"
                      class="max-h-full max-w-full object-contain">
             </div>

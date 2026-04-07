@@ -23,127 +23,189 @@
 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-8">
 
     <!-- INFORMASI PRODUK -->
-    <div>
-        <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <i data-lucide="info"></i>
-            Informasi Produk
-        </h2>
+<div>
+    <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <i data-lucide="info"></i>
+        Informasi Produk
+    </h2>
 
-        <div class="grid md:grid-cols-2 gap-6">
+    <div class="grid md:grid-cols-2 gap-6">
 
-            <!-- KATEGORI -->
-            <div>
-                <label class="text-sm text-gray-600 mb-1 block">Kategori</label>
-                <div class="relative">
-                    <i data-lucide="layers" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <select name="kategori_id"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
-                        required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoris as $k)
-                            <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                        @endforeach
-                    </select>
-                </div>
+        <!-- KATEGORI -->
+        <div>
+            <label class="text-sm text-gray-600 mb-1 block">Kategori</label>
+            <div class="relative">
+                <i data-lucide="layers" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+
+                <select name="kategori_id"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
+                    required>
+
+                    <option value="">Pilih Kategori</option>
+
+                    @foreach($kategoris as $k)
+                        <option value="{{ $k->id }}"
+                            {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
+                            {{ $k->nama_kategori }}
+                        </option>
+                    @endforeach
+
+                </select>
             </div>
 
-            <!-- STATUS -->
-            <div>
-                <label class="text-sm text-gray-600 mb-1 block">Status</label>
-                <div class="relative">
-                    <i data-lucide="toggle-right" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <select name="is_active"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400">
-                        <option value="1">Aktif</option>
-                        <option value="0">Nonaktif</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- NAMA -->
-            <div class="md:col-span-2">
-                <label class="text-sm text-gray-600 mb-1 block">Nama Produk</label>
-                <div class="relative">
-                    <i data-lucide="package" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <input type="text" name="nama_produk"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
-                        required>
-                </div>
-            </div>
-
-            <!-- DESKRIPSI -->
-            <div class="md:col-span-2">
-                <label class="text-sm text-gray-600 mb-1 block">Deskripsi</label>
-                <div class="relative">
-                    <i data-lucide="file-text" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <textarea name="deskripsi"
-                        rows="4"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
-                        required></textarea>
-                </div>
-            </div>
-
-            <!-- HARGA -->
-            <div>
-                <label class="text-sm text-gray-600 mb-1 block">Harga</label>
-                <div class="relative">
-                    <i data-lucide="banknote" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <input type="number" name="harga"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
-                        required>
-                </div>
-            </div>
-
-            <!-- STOK -->
-            <div>
-                <label class="text-sm text-gray-600 mb-1 block">Stok</label>
-                <div class="relative">
-                    <i data-lucide="boxes" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                    <input type="number" name="stok"
-                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
-                        required>
-                </div>
-            </div>
-
+            @error('kategori_id')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
         </div>
-    </div>
 
-    <!-- GAMBAR -->
-    <div>
-        <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <i data-lucide="image"></i>
-            Gambar Produk
-        </h2>
+        <!-- STATUS -->
+        <div>
+            <label class="text-sm text-gray-600 mb-1 block">Status</label>
+            <div class="relative">
+                <i data-lucide="toggle-right" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
 
-        <div class="grid md:grid-cols-3 gap-6">
+                <select name="is_active"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
+                    required>
 
-            <div>
-                <label class="text-sm text-gray-600 mb-2 block">Gambar 1</label>
-                <img id="preview1" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
-                <input type="file" name="gambar_1"
-                    onchange="previewImage(event, 'preview1')"
-                    class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2"
+                    <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Aktif</option>
+                    <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Nonaktif</option>
+
+                </select>
+            </div>
+
+            @error('is_active')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- NAMA -->
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600 mb-1 block">Nama Produk</label>
+            <div class="relative">
+                <i data-lucide="package" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+
+                <input type="text" name="nama_produk"
+                    value="{{ old('nama_produk') }}"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
                     required>
             </div>
 
-            <div>
-                <label class="text-sm text-gray-600 mb-2 block">Gambar 2</label>
-                <img id="preview2" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
-                <input type="file" name="gambar_2"
-                    onchange="previewImage(event, 'preview2')"
-                    class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2">
-            </div>
-
-            <div>
-                <label class="text-sm text-gray-600 mb-2 block">Gambar 3</label>
-                <img id="preview3" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
-                <input type="file" name="gambar_3"
-                    onchange="previewImage(event, 'preview3')"
-                    class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2">
-            </div>
-
+            @error('nama_produk')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
         </div>
+
+        <!-- DESKRIPSI -->
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600 mb-1 block">Deskripsi</label>
+            <div class="relative">
+                <i data-lucide="file-text" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+
+                <textarea name="deskripsi"
+                    rows="4"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
+                    required>{{ old('deskripsi') }}</textarea>
+            </div>
+
+            @error('deskripsi')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- HARGA -->
+        <div>
+            <label class="text-sm text-gray-600 mb-1 block">Harga</label>
+            <div class="relative">
+                <i data-lucide="banknote" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+
+                <input type="number" name="harga"
+                    value="{{ old('harga') }}"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
+                    required>
+            </div>
+
+            @error('harga')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- STOK -->
+        <div>
+            <label class="text-sm text-gray-600 mb-1 block">Stok</label>
+            <div class="relative">
+                <i data-lucide="boxes" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+
+                <input type="number" name="stok"
+                    value="{{ old('stok') }}"
+                    class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-400"
+                    required>
+            </div>
+
+            @error('stok')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
     </div>
+</div>
+
+    <!-- GAMBAR -->
+    <div>
+    <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <i data-lucide="image"></i>
+        Gambar Produk
+    </h2>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- GAMBAR 1 -->
+        <div>
+            <label class="text-sm text-gray-600 mb-2 block">Gambar 1</label>
+            <img id="preview1" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
+            <input type="file" name="gambar_1"
+                accept="image/*"
+                onchange="previewImage(event, 'preview1')"
+                class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2"
+                required>
+
+            @error('gambar_1')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- GAMBAR 2 -->
+        <div>
+            <label class="text-sm text-gray-600 mb-2 block">Gambar 2</label>
+            <img id="preview2" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
+            <input type="file" name="gambar_2"
+                accept="image/*"
+                onchange="previewImage(event, 'preview2')"
+                class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2"
+                required>
+
+            @error('gambar_2')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- GAMBAR 3 -->
+        <div>
+            <label class="text-sm text-gray-600 mb-2 block">Gambar 3</label>
+            <img id="preview3" class="w-24 h-24 object-cover mb-2 rounded-lg hidden border">
+            <input type="file" name="gambar_3"
+                accept="image/*"
+                onchange="previewImage(event, 'preview3')"
+                class="w-full text-sm border border-gray-300 rounded-xl px-3 py-2"
+                required>
+
+            @error('gambar_3')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+    </div>
+</div>
 
     <!-- BUTTON -->
     <div class="flex justify-end gap-3 pt-4 border-t">

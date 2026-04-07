@@ -34,21 +34,21 @@ public function store(Request $request): RedirectResponse
 
     if (!$user) {
         return back()->withErrors([
-            'email' => 'Email tidak ditemukan'
+            'email' => 'Email atau password salah'
         ]);
     }
 
     // 🔥 VALIDASI ROLE
     if ($user->role !== $loginRole) {
         return back()->withErrors([
-            'email' => 'Akun tidak sesuai dengan halaman login'
+            'email' => 'Email atau password salah'
         ]);
     }
 
     // 🔥 LOGIN
     if (!Auth::attempt($credentials)) {
         return back()->withErrors([
-            'email' => 'Password salah'
+            'email' => 'Email atau password salah'
         ]);
     }
 

@@ -5,19 +5,30 @@
 <div class="max-w-3xl mx-auto py-10 px-4">
 
     <!-- HEADER -->
-    <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+    <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
 
-        <!-- EDIT LOCATION ICON -->
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-6 h-6 text-red-600"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor">
-            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243A8 8 0 1117.657 16.657z"/>
-            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
+        <!-- BACK BUTTON -->
+        <a href="#"
+        onclick="event.preventDefault(); 
+                    if (window.history.length > 1) { 
+                        history.back(); 
+                    } else { 
+                        window.location.href='{{ route('dashboard') }}'; 
+                    }"
+        class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
+
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                class="w-6 h-6" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor">
+
+                <path stroke-linecap="round" 
+                    stroke-linejoin="round" 
+                    stroke-width="2" 
+                    d="M15 19l-7-7 7-7"/>
+            </svg>
+        </a>
 
         Edit Alamat
 

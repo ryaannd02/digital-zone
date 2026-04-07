@@ -35,31 +35,41 @@ class ProdukController extends Controller
         return view('admin.produk.create', compact('kategoris'));
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'kategori_id' => 'required',
-            'nama_produk' => 'required',
-            'deskripsi' => 'required',
-            'harga' => 'required|numeric',
-            'stok' => 'required|numeric',
-            'gambar_1' => 'required|image',
-            'gambar_2' => 'nullable|image',
-            'gambar_3' => 'nullable|image',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'kategori_id' => 'required',
+        'nama_produk' => 'required',
+        'deskripsi' => 'required',
+        'harga' => 'required|numeric',
+        'stok' => 'required|numeric',
+        'gambar_1' => 'required|image',
+        'gambar_2' => 'required|image',
+        'gambar_3' => 'required|image',
+    ]);
 
-        // upload gambar
-        foreach (['gambar_1','gambar_2','gambar_3'] as $gambar) {
-            if ($request->hasFile($gambar)) {
-                $data[$gambar] = $request->file($gambar)->store('produk','public');
-            }
+    // ambil semua data dulu
+    $data = $request->only([
+        'kategori_id',
+        'nama_produk',
+        'deskripsi',
+        'harga',
+        'stok',
+        'is_active'
+    ]);
+
+    // upload gambar
+    foreach (['gambar_1','gambar_2','gambar_3'] as $gambar) {
+        if ($request->hasFile($gambar)) {
+            $data[$gambar] = $request->file($gambar)->store('produk','public');
         }
-
-        Produk::create($data);
-
-        return redirect()->route('admin.produk.index')
-            ->with('success', 'Produk berhasil ditambahkan');
     }
+
+    Produk::create($data);
+
+    return redirect()->route('admin.produk.index')
+        ->with('success', 'Produk berhasil ditambahkan');
+}
 
     public function edit($id)
     {

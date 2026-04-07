@@ -39,21 +39,27 @@
 <div class="flex items-center gap-2 mb-4">
 
     <!-- BACK ICON -->
-    <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('home') }}"
-       class="text-gray-600 hover:text-red-600 transition">
+<a href="#"
+   onclick="event.preventDefault(); 
+            if (window.history.length > 1) { 
+                history.back(); 
+            } else { 
+                window.location.href='{{ route('dashboard') }}'; 
+            }"
+   class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
 
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-6 h-6"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="w-6 h-6" 
+         fill="none" 
+         viewBox="0 0 24 24" 
+         stroke="currentColor">
 
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"/>
-        </svg>
-    </a>
+        <path stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M15 19l-7-7 7-7"/>
+    </svg>
+</a>
 
     <!-- TITLE -->
     <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 leading-snug">
@@ -68,24 +74,25 @@
             </p>
 
             <!-- DESKRIPSI (COLLAPSE) -->
-            <div class="mt-6 text-gray-600 text-sm leading-relaxed">
+<div class="mt-6 text-gray-600 text-sm leading-relaxed">
 
-                <div id="descShort">
-                    {{ \Illuminate\Support\Str::limit($produk->deskripsi, 150) }}
-                </div>
+    <div id="descShort">
+        {{ \Illuminate\Support\Str::limit($produk->deskripsi, 150) }}
+    </div>
 
-                <div id="descFull" class="hidden">
-                    {!! nl2br(e($produk->deskripsi)) !!}
-                </div>
+    <div id="descFull" class="hidden">
+        {!! nl2br(e($produk->deskripsi)) !!}
+    </div>
 
-                @if(strlen($produk->deskripsi) > 150)
-                <button onclick="toggleDesc()"
-                        class="text-red-600 mt-2 text-sm font-medium">
-                    Lihat Selengkapnya
-                </button>
-                @endif
+    @if(strlen($produk->deskripsi) > 150)
+    <button id="toggleBtn"
+            onclick="toggleDesc()"
+            class="text-red-600 mt-2 text-sm font-medium">
+        Lihat Selengkapnya
+    </button>
+    @endif
 
-            </div>
+</div>
 
             <!-- QTY -->
             <div class="mt-6">
@@ -124,22 +131,16 @@
                 <div class="grid grid-cols-2 gap-4">
 
                     <!-- CART -->
-                    <form action="{{ route('keranjang.store', $produk->id) }}" method="POST">
+                    <form action="{{ route('keranjang.store', $produk->id) }}"
+      method="POST"
+      onsubmit="setQty('cart')">
                         @csrf
+
                         <input type="hidden" name="qty" id="qty_cart">
 
                         <button type="submit" onclick="setQty('cart')"
                                 class="w-full border border-gray-300 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50">
 
-                            <!-- CART ICON -->
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="w-5 h-5"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"/>
-                            </svg>
 
                             Keranjang
                         </button>
@@ -195,12 +196,20 @@ function setQty(type) {
     }
 }
 
-function toggleDesc(){
-    let short = document.getElementById('descShort');
-    let full = document.getElementById('descFull');
+function toggleDesc() {
+    const shortDesc = document.getElementById('descShort');
+    const fullDesc = document.getElementById('descFull');
+    const btn = document.getElementById('toggleBtn');
 
-    short.classList.toggle('hidden');
-    full.classList.toggle('hidden');
+    if (fullDesc.classList.contains('hidden')) {
+        fullDesc.classList.remove('hidden');
+        shortDesc.classList.add('hidden');
+        btn.innerText = 'Tutup';
+    } else {
+        fullDesc.classList.add('hidden');
+        shortDesc.classList.remove('hidden');
+        btn.innerText = 'Lihat Selengkapnya';
+    }
 }
 
 </script>

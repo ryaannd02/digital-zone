@@ -196,7 +196,8 @@
             <a href="{{ route('login') }}" class="hover:text-yellow-300 text-sm">Login</a>
 
             <a href="{{ route('register') }}"
-               class="bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-semibold">
+            class="bg-[#AA1B25] text-white px-4 py-2 rounded-lg text-sm font-semibold 
+                    hover:bg-[#8E161F] transition shadow-sm hover:shadow-md">
                 Daftar
             </a>
 

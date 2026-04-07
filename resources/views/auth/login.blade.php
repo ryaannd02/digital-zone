@@ -61,6 +61,12 @@
 
         </div>
 
+        @if(session('error'))
+            <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- FORM -->
         <div class="p-8">
 
@@ -77,6 +83,11 @@
                             class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-gray-300 focus:outline-none">
                         <i data-lucide="mail"class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
+
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+
                 </div>
 
                 <!-- Password -->
@@ -94,6 +105,10 @@
                     class="w-full text-white py-2.5 rounded-lg font-semibold transition {{ $buttonColor }}">
                     Masuk
                 </button>
+
+                @error('password')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
 
             </form>
 

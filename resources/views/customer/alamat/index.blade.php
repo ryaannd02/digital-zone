@@ -12,21 +12,35 @@
     <div class="flex items-center gap-3">
 
         <!-- BACK BUTTON -->
-        <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('customer.dashboard') }}"
-           class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
+<a href="#"
+   onclick="event.preventDefault(); 
 
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 class="w-6 h-6"
-                 fill="none"
-                 viewBox="0 0 24 24"
-                 stroke="currentColor">
+        const ref = document.referrer;
 
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 19l-7-7 7-7"/>
-            </svg>
-        </a>
+        if (
+            ref && 
+            !ref.includes('/create') && 
+            !ref.includes('/edit')
+        ) {
+            history.back();
+        } else {
+            window.location.href='{{ route('dashboard') }}';
+        }
+   "
+   class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
+
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="w-6 h-6" 
+         fill="none" 
+         viewBox="0 0 24 24" 
+         stroke="currentColor">
+
+        <path stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M15 19l-7-7 7-7"/>
+    </svg>
+</a>
 
         <!-- TITLE -->
         <h2 class="text-2xl font-bold text-gray-800">

@@ -231,6 +231,12 @@ $statusOrder = [
 ];
 
 $current = $statusOrder[$pesanan->order_status] ?? 1;
+
+// ambil next status
+$nextStatus = collect($statusOrder)
+    ->filter(fn($v) => $v == $current + 1)
+    ->keys()
+    ->first();
 @endphp
 
 @if($pesanan->order_status === 'selesai')
@@ -254,7 +260,7 @@ $current = $statusOrder[$pesanan->order_status] ?? 1;
         Tidak bisa update status (belum dibayar)
     </p>
 
-@else
+@elseif($nextStatus)
 
 <form method="POST"
       action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}">
@@ -264,42 +270,22 @@ $current = $statusOrder[$pesanan->order_status] ?? 1;
 
     <div class="flex items-center gap-4">
 
-<div class="relative w-56">
+        <!-- INFO -->
+        <div class="px-4 py-2 rounded-xl border text-sm text-gray-700 bg-gray-50">
+            {{ ucfirst($pesanan->order_status) }}
+            <span class="mx-1 text-gray-400">→</span>
+            <span class="font-semibold text-[#AA1B25]">
+                {{ ucfirst($nextStatus) }}
+            </span>
+        </div>
 
-    <!-- Icon -->
-    <i data-lucide="refresh-cw"
-       class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+        <!-- HIDDEN INPUT -->
+        <input type="hidden" name="order_status" value="{{ $nextStatus }}">
 
-    <!-- Select -->
-    <select name="order_status"
-        class="appearance-none w-full pl-9 pr-10 py-2 rounded-xl border border-gray-300 text-sm text-gray-700 bg-white
-               focus:ring-2 focus:ring-[#AA1B25] focus:border-[#AA1B25] focus:outline-none
-               hover:border-gray-400 transition cursor-pointer">
-
-        @foreach($statusOrder as $status => $value)
-            @if($status === 'gagal') @continue @endif
-
-            <option value="{{ $status }}"
-                {{ $value < $current ? 'disabled' : '' }}
-                {{ $pesanan->order_status == $status ? 'selected' : '' }}>
-                {{ ucfirst($status) }}
-            </option>
-        @endforeach
-
-    </select>
-
-    <!-- Arrow -->
-    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-    </div>
-
-</div>
-
+        <!-- BUTTON -->
         <button class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-800 transition flex items-center gap-2">
-            <i data-lucide="refresh-cw"></i>
-            Update Status
+            <i data-lucide="arrow-right"></i>
+            Update ke {{ ucfirst($nextStatus) }}
         </button>
 
     </div>

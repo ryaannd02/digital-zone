@@ -8,21 +8,27 @@
 <div class="flex items-center gap-3 mb-8">
 
     <!-- BACK BUTTON -->
-    <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('customer.dashboard') }}"
-       class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
+<a href="#"
+   onclick="event.preventDefault(); 
+            if (window.history.length > 1) { 
+                history.back(); 
+            } else { 
+                window.location.href='{{ route('dashboard') }}'; 
+            }"
+   class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
 
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             class="w-6 h-6" 
-             fill="none" 
-             viewBox="0 0 24 24" 
-             stroke="currentColor">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="w-6 h-6" 
+         fill="none" 
+         viewBox="0 0 24 24" 
+         stroke="currentColor">
 
-            <path stroke-linecap="round" 
-                  stroke-linejoin="round" 
-                  stroke-width="2" 
-                  d="M15 19l-7-7 7-7"/>
-        </svg>
-    </a>
+        <path stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M15 19l-7-7 7-7"/>
+    </svg>
+</a>
 
     <!-- TITLE -->
     <h2 class="text-xl md:text-2xl font-semibold text-gray-800">
@@ -77,25 +83,31 @@
                 <!-- RIGHT SIDE -->
                 <div class="flex items-center justify-between md:justify-end gap-4">
 
-                    <!-- QTY -->
-                    <form action="{{ route('keranjang.update', $item->id) }}" method="POST"
-                          class="flex items-center border rounded-lg overflow-hidden">
-                        @csrf
-                        @method('PUT')
+<!-- QTY -->
+<form class="flex items-center border rounded-lg overflow-hidden">
 
-                        <button type="submit" name="qty" value="{{ max(1, $item->qty - 1) }}"
-                                class="px-3 py-1 bg-gray-100 hover:bg-gray-200 transition">
-                            −
-                        </button>
+    <!-- MINUS -->
+    <button type="button"
+        onclick="updateQty({{ $item->id }}, Math.max(1, parseInt(document.getElementById('qty-{{ $item->id }}').value) - 1))"
+        class="px-3 py-1 bg-gray-100 hover:bg-gray-200">
+        −
+    </button>
 
-                        <input type="text" value="{{ $item->qty }}"
-                            class="w-10 text-center outline-none text-sm" readonly>
+    <!-- INPUT -->
+    <input id="qty-{{ $item->id }}"
+           type="text"
+           value="{{ $item->qty }}"
+           class="w-10 text-center outline-none text-sm"
+           readonly>
 
-                        <button type="submit" name="qty" value="{{ $item->qty + 1 }}"
-                                class="px-3 py-1 bg-gray-100 hover:bg-gray-200 transition">
-                            +
-                        </button>
-                    </form>
+    <!-- PLUS -->
+    <button type="button"
+        onclick="updateQty({{ $item->id }}, parseInt(document.getElementById('qty-{{ $item->id }}').value) + 1)"
+        class="px-3 py-1 bg-gray-100 hover:bg-gray-200">
+        +
+    </button>
+
+</form>
 
                     <!-- DELETE -->
                     <form action="{{ route('keranjang.destroy', $item->id) }}" method="POST">
@@ -182,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (cb.checked) {
                 const harga = parseInt(cb.dataset.price);
                 const qty = parseInt(cb.dataset.qty);
-
                 total += harga * qty;
             }
         });
@@ -190,10 +201,39 @@ document.addEventListener("DOMContentLoaded", function () {
         totalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
     }
 
-    // 🔥 EVENT CHECKBOX
     checkboxes.forEach(cb => {
         cb.addEventListener('change', hitungTotal);
     });
+
+    // 🔥 FIX UTAMA DI SINI
+    window.updateQty = function(id, qty) {
+
+        fetch(`/keranjang/${id}`, {
+            method: 'PUT', // 🔥 FIX
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                qty: qty
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+
+            const qtyInput = document.querySelector(`#qty-${id}`);
+            if (qtyInput) qtyInput.value = qty;
+
+            const checkbox = document.querySelector(`.item-checkbox[value="${id}"]`);
+            if (checkbox) checkbox.dataset.qty = qty;
+
+            hitungTotal();
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal update qty'); // 🔥 biar keliatan error
+        });
+    }
 
 });
 </script>

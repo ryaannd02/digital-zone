@@ -37,6 +37,16 @@
 
         </div>
 
+        @if ($errors->any())
+            <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                <ul class="list-disc pl-5 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- FORM -->
         <div class="p-8">
 
@@ -49,6 +59,9 @@
                     <div class="relative">
                         <input type="text" name="name" required
                             class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
+                            @error('name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         <i data-lucide="user" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
                 </div>
@@ -56,21 +69,41 @@
                 <!-- Email -->
                 <div class="mb-4">
                     <label class="text-sm text-gray-600">Email</label>
+
                     <div class="relative">
-                        <input type="email" name="email" required
-                            class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
-                        <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="email" name="email"
+                        value="{{ $errors->has('email') ? '' : old('email') }}"
+                        required
+                        class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border 
+                        @error('email') border-red-500 @enderror
+                        focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
+
+                        <i data-lucide="mail"
+                        class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
+
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Password -->
                 <div class="mb-4">
                     <label class="text-sm text-gray-600">Password</label>
+
                     <div class="relative">
                         <input type="password" name="password" required
-                            class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
-                        <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border 
+                            @error('password') border-red-500 @enderror
+                            focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
+
+                        <i data-lucide="lock"
+                        class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
+
+                    @error('password')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Confirm -->
@@ -79,6 +112,9 @@
                     <div class="relative">
                         <input type="password" name="password_confirmation" required
                             class="w-full mt-1 px-4 py-2 pl-10 rounded-lg border focus:ring-2 focus:ring-[#AA1B25] focus:outline-none">
+                            @error('password_confirmation')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         <i data-lucide="shield-check" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
                 </div>
