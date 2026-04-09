@@ -11,7 +11,7 @@
 <a href="#"
    onclick="event.preventDefault(); 
             if (window.history.length > 1) { 
-                history.back(); 
+                window.location.href = document.referrer; 
             } else { 
                 window.location.href='{{ route('dashboard') }}'; 
             }"

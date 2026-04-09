@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alamat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AlamatController extends Controller
 {
@@ -127,5 +128,28 @@ class AlamatController extends Controller
         $alamat->update(['is_primary' => true]);
 
         return back()->with('success', 'Alamat utama diperbarui.');
+    }
+
+    public function updateAkun(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // kalau isi password → update
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Akun berhasil diperbarui');
     }
 }

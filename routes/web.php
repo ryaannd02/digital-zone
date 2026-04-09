@@ -91,6 +91,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
 
+    Route::get('/customer/pesanan/{id}/invoice', [PesananController::class, 'invoice'])
+    ->name('customer.pesanan.invoice');
+
+    Route::patch('/pesanan/{id}/selesai', [PesananController::class, 'selesai'])
+        ->name('customer.pesanan.selesai');
+
+    Route::patch('/akun/update', [AlamatController::class, 'updateAkun'])->name('akun.update');
+
     Route::prefix('alamat')->name('alamat.')->group(function () {
         Route::get('/', [AlamatController::class, 'index'])->name('index');
         Route::get('/create', [AlamatController::class, 'create'])->name('create');

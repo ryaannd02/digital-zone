@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Notification;
 
 class PesananController extends Controller
 {
@@ -76,7 +77,6 @@ public function index(Request $request)
 
         $allowed = [
             'diproses' => 'dikirim',
-            'dikirim' => 'selesai',
         ];
 
         $current = $pesanan->order_status;
@@ -87,9 +87,30 @@ public function index(Request $request)
             return back()->with('error', 'Tidak bisa mengubah status ke tahap ini');
         }
 
-        $pesanan->update([
+        $dataUpdate = [
             'order_status' => $next
-        ]);
+        ];
+
+        // 🔥 JIKA STATUS JADI DIKIRIM → START TRACKING
+        if ($next === 'dikirim') {
+            $dataUpdate['tracking_status'] = 'pickup';
+            $dataUpdate['tracking_started_at'] = now();
+
+            // sesuaikan dengan field ongkir kamu
+            $dataUpdate['ongkir_type'] = $pesanan->layanan_pengiriman ?? 'reguler';
+        }
+
+        $pesanan->update($dataUpdate);
+
+        // 🔔 NOTIFIKASI KE USER (SAMA SEPERTI ADMIN)
+        if ($next === 'dikirim') {
+            Notification::create([
+                'user_id' => $pesanan->user_id,
+                'type' => 'status',
+                'title' => 'Pesanan Dikirim',
+                'message' => 'Pesanan dengan kode ' . $pesanan->kode . ' saat ini sedang dalam proses pengiriman oleh kurir. Mohon menunggu hingga paket sampai ke alamat tujuan. Pastikan nomor yang Anda cantumkan aktif agar kurir dapat menghubungi jika diperlukan.',
+            ]);
+        }
 
         return back()->with('success', 'Status berhasil diperbarui');
     }

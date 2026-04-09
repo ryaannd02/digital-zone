@@ -187,27 +187,93 @@
 
 </div>
 
+{{-- TRACKING --}}
+@if($pesanan->order_status === 'dikirim' && $pesanan->tracking_started_at)
+
+@php
+    $diff = $pesanan->tracking_started_at->diffInSeconds(now());
+
+    $status = 'pickup';
+
+    // REGULER
+    if ($pesanan->ongkir_type === 'reguler') {
+        if ($diff >= 120) $status = 'sampai';
+        elseif ($diff >= 90) $status = 'menuju_alamat';
+        elseif ($diff >= 60) $status = 'perjalanan';
+    }
+
+    // EXPRESS
+    if ($pesanan->ongkir_type === 'express') {
+        if ($diff >= 40) $status = 'sampai';
+        elseif ($diff >= 30) $status = 'menuju_alamat';
+        elseif ($diff >= 20) $status = 'perjalanan';
+    }
+
+    // EKONOMIS
+    if ($pesanan->ongkir_type === 'ekonomis') {
+        if ($diff >= 180) $status = 'sampai';
+        elseif ($diff >= 140) $status = 'menuju_alamat';
+        elseif ($diff >= 100) $status = 'perjalanan';
+    }
+@endphp
+
+<div 
+    x-data="{ now: Date.now() }"
+    x-init="setInterval(() => now = Date.now(), 1000)"
+    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+
+    <h2 class="font-semibold text-gray-800 mb-5 flex items-center gap-2">
+        <i data-lucide="truck" class="w-4 h-4"></i>
+        Tracking Pengiriman
+    </h2>
+
+    <div class="relative flex justify-between items-center text-xs">
+
+        <!-- LINE -->
+        <div class="absolute top-5 left-0 right-0 h-[2px] bg-gray-200 z-0"></div>
+
+        @foreach([
+            'pickup'=>'Pickup',
+            'perjalanan'=>'Perjalanan',
+            'menuju_alamat'=>'Menuju',
+            'sampai'=>'Sampai'
+        ] as $key => $label)
+
+        <div class="flex flex-col items-center flex-1 relative z-10">
+
+            <div class="w-10 h-10 flex items-center justify-center rounded-full transition
+                {{ $status == $key
+                    ? ($key == 'sampai'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-blue-600 text-white')
+                    : 'bg-gray-200 text-gray-500' }}">
+
+                <div class="w-2 h-2 bg-current rounded-full"></div>
+            </div>
+
+            <p class="mt-2">{{ $label }}</p>
+
+        </div>
+
+        @endforeach
+
+    </div>
+
+</div>
+
+@endif
+
         <!-- UPDATE STATUS -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
 
     <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <i data-lucide="settings" class="w-4 h-4"></i>
         Update Status
     </h2>
 
-    @if($pesanan->order_status !== 'selesai')
+    {{-- ✅ HANYA BISA DARI DIPROSES → DIKIRIM --}}
+    @if($pesanan->order_status === 'diproses')
 
-        @php
-            $nextStatus = null;
-
-            if ($pesanan->order_status === 'diproses') {
-                $nextStatus = 'dikirim';
-            } elseif ($pesanan->order_status === 'dikirim') {
-                $nextStatus = 'selesai';
-            }
-        @endphp
-
-        @if($nextStatus)
         <form method="POST"
               action="{{ route('petugas.pesanan.updateStatus', $pesanan->id) }}"
               class="space-y-3">
@@ -216,35 +282,49 @@
 
             <!-- INFO -->
             <div class="text-sm text-gray-600">
-                {{ ucfirst($pesanan->order_status) }}
+                Diproses
                 <span class="mx-1 text-gray-400">→</span>
                 <span class="font-semibold text-green-600">
-                    {{ ucfirst($nextStatus) }}
+                    Dikirim
                 </span>
             </div>
 
             <!-- HIDDEN -->
-            <input type="hidden" name="order_status" value="{{ $nextStatus }}">
+            <input type="hidden" name="order_status" value="dikirim">
 
             <!-- BUTTON -->
             <button class="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition flex items-center justify-center gap-2">
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                Update ke {{ ucfirst($nextStatus) }}
+                Kirim Pesanan
             </button>
 
         </form>
-        @endif
 
-    @else
+    {{-- 🔒 SUDAH DIKIRIM → LOCK --}}
+    @elseif($pesanan->order_status === 'dikirim')
+
+        <div class="text-yellow-600 font-semibold flex items-center gap-2">
+            <i data-lucide="truck" class="w-4 h-4"></i>
+            Pesanan sedang dikirim
+        </div>
+
+        <p class="text-sm text-gray-500 mt-2">
+            Status tidak dapat diubah oleh petugas.
+        </p>
+
+    {{-- ✅ SUDAH SELESAI --}}
+    @elseif($pesanan->order_status === 'selesai')
+
         <p class="text-green-600 font-semibold flex items-center gap-2">
             <i data-lucide="check-circle" class="w-4 h-4"></i>
             Pesanan sudah selesai
         </p>
+
     @endif
 
 </div>
 
-    </div>
+</div>
 
 </div>
 

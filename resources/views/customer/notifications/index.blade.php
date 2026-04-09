@@ -10,11 +10,14 @@
     <!-- BACK BUTTON -->
 <a href="#"
    onclick="event.preventDefault(); 
-            if (window.history.length > 1) { 
-                history.back(); 
-            } else { 
-                window.location.href='{{ route('dashboard') }}'; 
-            }"
+
+        if (document.referrer) {
+            window.location.href = document.referrer;
+        } else {
+            window.location.href='{{ route('dashboard') }}';
+        }
+
+   "
    class="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-gray-100 transition">
 
     <svg xmlns="http://www.w3.org/2000/svg" 

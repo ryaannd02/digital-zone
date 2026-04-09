@@ -218,81 +218,146 @@
 
 </div>
 
-<!-- STATUS UPDATE -->
-<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+{{-- TRACKING --}}
+@if($pesanan->order_status === 'dikirim' && $pesanan->tracking_started_at)
 
 @php
-$statusOrder = [
-    'tertunda' => 1,
-    'diproses' => 2,
-    'dikirim' => 3,
-    'selesai' => 4,
-    'gagal' => 5
-];
+    $diff = $pesanan->tracking_started_at->diffInSeconds(now());
 
-$current = $statusOrder[$pesanan->order_status] ?? 1;
+    $status = 'pickup';
 
-// ambil next status
-$nextStatus = collect($statusOrder)
-    ->filter(fn($v) => $v == $current + 1)
-    ->keys()
-    ->first();
+    if ($pesanan->ongkir_type === 'reguler') {
+        if ($diff >= 120) $status = 'sampai';
+        elseif ($diff >= 90) $status = 'menuju_alamat';
+        elseif ($diff >= 60) $status = 'perjalanan';
+    }
+
+    if ($pesanan->ongkir_type === 'express') {
+        if ($diff >= 40) $status = 'sampai';
+        elseif ($diff >= 30) $status = 'menuju_alamat';
+        elseif ($diff >= 20) $status = 'perjalanan';
+    }
+
+    if ($pesanan->ongkir_type === 'ekonomis') {
+        if ($diff >= 180) $status = 'sampai';
+        elseif ($diff >= 140) $status = 'menuju_alamat';
+        elseif ($diff >= 100) $status = 'perjalanan';
+    }
 @endphp
 
-@if($pesanan->order_status === 'selesai')
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
 
-    <p class="text-green-600 font-semibold flex items-center gap-2">
-        <i data-lucide="check-circle"></i>
-        Pesanan sudah selesai
-    </p>
+    <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <i data-lucide="truck"></i>
+        Tracking Pengiriman
+    </h2>
 
-@elseif($pesanan->order_status === 'gagal')
+    <div class="relative flex justify-between items-center text-xs">
 
-    <p class="text-red-600 font-semibold flex items-center gap-2">
-        <i data-lucide="x-circle"></i>
-        Pesanan dibatalkan / gagal
-    </p>
+        <!-- LINE -->
+        <div class="absolute top-5 left-0 right-0 h-[2px] bg-gray-200"></div>
 
-@elseif($pesanan->payment_status !== 'paid')
+        @foreach([
+            'pickup'=>'Pickup',
+            'perjalanan'=>'Perjalanan',
+            'menuju_alamat'=>'Menuju',
+            'sampai'=>'Sampai'
+        ] as $key => $label)
 
-    <p class="text-red-600 font-semibold flex items-center gap-2">
-        <i data-lucide="alert-circle"></i>
-        Tidak bisa update status (belum dibayar)
-    </p>
+        <div class="flex flex-col items-center flex-1 relative z-10">
 
-@elseif($nextStatus)
+            <div class="w-10 h-10 flex items-center justify-center rounded-full
+                {{ $status == $key
+                    ? ($key == 'sampai'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-blue-600 text-white')
+                    : 'bg-gray-200 text-gray-500' }}">
 
-<form method="POST"
-      action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}">
+                <div class="w-2 h-2 bg-current rounded-full"></div>
+            </div>
 
-    @csrf
-    @method('PATCH')
+            <p class="mt-2">{{ $label }}</p>
 
-    <div class="flex items-center gap-4">
-
-        <!-- INFO -->
-        <div class="px-4 py-2 rounded-xl border text-sm text-gray-700 bg-gray-50">
-            {{ ucfirst($pesanan->order_status) }}
-            <span class="mx-1 text-gray-400">→</span>
-            <span class="font-semibold text-[#AA1B25]">
-                {{ ucfirst($nextStatus) }}
-            </span>
         </div>
 
-        <!-- HIDDEN INPUT -->
-        <input type="hidden" name="order_status" value="{{ $nextStatus }}">
-
-        <!-- BUTTON -->
-        <button class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-800 transition flex items-center gap-2">
-            <i data-lucide="arrow-right"></i>
-            Update ke {{ ucfirst($nextStatus) }}
-        </button>
+        @endforeach
 
     </div>
 
-</form>
+</div>
 
 @endif
+
+<!-- STATUS UPDATE -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+
+    <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <i data-lucide="settings"></i>
+        Update Status
+    </h2>
+
+    {{-- ❌ BELUM BAYAR --}}
+    @if($pesanan->payment_status !== 'paid')
+
+        <p class="text-red-600 font-semibold flex items-center gap-2">
+            <i data-lucide="alert-circle"></i>
+            Tidak bisa update status (belum dibayar)
+        </p>
+
+    {{-- ✅ HANYA DIPROSES → DIKIRIM --}}
+    @elseif($pesanan->order_status === 'diproses')
+
+        <form method="POST"
+              action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}">
+            @csrf
+            @method('PATCH')
+
+            <div class="flex items-center gap-4">
+
+                <div class="px-4 py-2 rounded-xl border text-sm text-gray-700 bg-gray-50">
+                    Diproses
+                    <span class="mx-1 text-gray-400">→</span>
+                    <span class="font-semibold text-[#AA1B25]">
+                        Dikirim
+                    </span>
+                </div>
+
+                <input type="hidden" name="order_status" value="dikirim">
+
+                <button class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-800 transition flex items-center gap-2">
+                    <i data-lucide="arrow-right"></i>
+                    Kirim Pesanan
+                </button>
+
+            </div>
+
+        </form>
+
+    {{-- 🔒 SUDAH DIKIRIM --}}
+    @elseif($pesanan->order_status === 'dikirim')
+
+        <p class="text-yellow-600 font-semibold flex items-center gap-2">
+            <i data-lucide="truck"></i>
+            Pesanan sedang dikirim
+        </p>
+
+    {{-- ✅ SELESAI --}}
+    @elseif($pesanan->order_status === 'selesai')
+
+        <p class="text-green-600 font-semibold flex items-center gap-2">
+            <i data-lucide="check-circle"></i>
+            Pesanan sudah selesai
+        </p>
+
+    {{-- ❌ GAGAL --}}
+    @elseif($pesanan->order_status === 'gagal')
+
+        <p class="text-red-600 font-semibold flex items-center gap-2">
+            <i data-lucide="x-circle"></i>
+            Pesanan dibatalkan / gagal
+        </p>
+
+    @endif
 
 </div>
 

@@ -41,43 +41,31 @@ class PesananController extends Controller
             return back()->with('error', 'Pesanan belum dibayar');
         }
 
-        // urutan status
-        $statusOrder = [
-            'tertunda' => 1,
-            'diproses' => 2,
-            'dikirim' => 3,
-            'selesai' => 4,
-        ];
-
-        $current = $statusOrder[$pesanan->order_status];
-        $new = $statusOrder[$request->order_status];
-
-        // ❌ tidak boleh mundur
-        if ($new < $current) {
-            return back()->with('error', 'Tidak bisa mengubah status mundur');
+        // 🔥 HANYA BOLEH DIPROSES → DIKIRIM
+        if ($pesanan->order_status !== 'diproses' || $request->order_status !== 'dikirim') {
+            return back()->with('error', 'Status hanya bisa diubah dari diproses ke dikirim');
         }
 
-        $pesanan->update([
-            'order_status' => $request->order_status
-        ]);
+        $dataUpdate = [
+            'order_status' => 'dikirim'
+        ];
 
+        // 🔥 START TRACKING (WAJIB ADA)
+        $dataUpdate['tracking_status'] = 'pickup';
+        $dataUpdate['tracking_started_at'] = now();
+        $dataUpdate['ongkir_type'] = $pesanan->layanan_pengiriman ?? 'reguler';
+
+        $pesanan->update($dataUpdate);
+
+        // 🔥 NOTIFIKASI HANYA DIKIRIM
         Notification::create([
-        'user_id' => $pesanan->user_id,
-        'type' => 'status',
-        'title' => match($request->order_status) {
-            'diproses' => 'Pesanan Diproses',
-            'dikirim' => 'Pesanan Dikirim',
-            'selesai' => 'Pesanan Selesai',
-            default => 'Update Pesanan'
-        },
-        'message' => match($request->order_status) {
-            'dikirim' => 'Pesanan dengan kode ' . $pesanan->kode . ' saat ini sedang dalam proses pengiriman oleh kurir. Mohon menunggu hingga paket sampai ke alamat tujuan. Pastikan nomor yang Anda cantumkan aktif agar kurir dapat menghubungi jika diperlukan.',
-            'selesai' => 'Pesanan dengan kode ' . $pesanan->kode . ' telah berhasil diselesaikan dan diterima. Terima kasih telah berbelanja bersama kami. Semoga produk yang Anda terima sesuai dengan harapan dan memberikan kepuasan.',
-            default => 'Status pesanan Anda dengan kode ' . $pesanan->kode . ' telah diperbarui. Silakan cek detail pesanan untuk informasi lebih lanjut mengenai perubahan yang terjadi.'
-        },
+            'user_id' => $pesanan->user_id,
+            'type' => 'status',
+            'title' => 'Pesanan Dikirim',
+            'message' => 'Pesanan dengan kode ' . $pesanan->kode . ' saat ini sedang dalam proses pengiriman oleh kurir. Mohon menunggu hingga paket sampai ke alamat tujuan. Pastikan nomor yang Anda cantumkan aktif agar kurir dapat menghubungi jika diperlukan.',
         ]);
 
-        return back()->with('success', 'Status berhasil diupdate');
+        return back()->with('success', 'Pesanan berhasil dikirim');
     }
 
     public function invoice($id)

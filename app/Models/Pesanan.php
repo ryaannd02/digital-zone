@@ -18,7 +18,14 @@ class Pesanan extends Model
         'expired_at',
         'payment_method',
         'payment_detail',
+        'tracking_status',
+        'tracking_started_at',
+        'ongkir_type',
     ];
+
+    protected $casts = [
+    'tracking_started_at' => 'datetime',
+];
 
         public static function generateKode()
     {
@@ -54,6 +61,41 @@ class Pesanan extends Model
                 $pesanan->kode = self::generateKode();
             }
         });
+    }
+
+    public function getTrackingStatusRealtime()
+    {
+        if ($this->order_status !== 'dikirim' || !$this->tracking_started_at) {
+            return null;
+        }
+
+        $diff = $this->tracking_started_at->diffInSeconds(now());
+
+        // REGULER
+        if ($this->ongkir_type === 'reguler') {
+            if ($diff >= 120) return 'sampai';
+            elseif ($diff >= 90) return 'menuju_alamat';
+            elseif ($diff >= 60) return 'perjalanan';
+            else return 'pickup';
+        }
+
+        // EXPRESS
+        if ($this->ongkir_type === 'express') {
+            if ($diff >= 40) return 'sampai';
+            elseif ($diff >= 30) return 'menuju_alamat';
+            elseif ($diff >= 20) return 'perjalanan';
+            else return 'pickup';
+        }
+
+        // EKONOMIS
+        if ($this->ongkir_type === 'ekonomis') {
+            if ($diff >= 180) return 'sampai';
+            elseif ($diff >= 140) return 'menuju_alamat';
+            elseif ($diff >= 100) return 'perjalanan';
+            else return 'pickup';
+        }
+
+        return 'pickup';
     }
 
 }

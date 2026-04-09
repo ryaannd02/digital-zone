@@ -104,8 +104,8 @@ class MidtransCallbackController extends Controller
                 \App\Models\Notification::create([
                     'user_id' => $pesanan->user_id,
                     'type' => 'order',
-                    'title' => 'Pesanan Diproses 📦',
-                    'message' => 'Pesanan #' . $pesanan->kode . ' sedang diproses oleh penjual.',
+                    'title' => 'Pesanan Diproses',
+                    'message' => 'Pesanan #' . $pesanan->kode . ' sedang diproses oleh penjual. Kami tengah mempersiapkan pesanan Anda untuk memastikan kualitas terbaik sebelum dikirim. Informasi lebih lanjut akan segera kami sampaikan.',
                 ]);
 
                 \Log::info('STATUS DIUBAH KE PAID');
